@@ -17,7 +17,11 @@ const ProductPage = () => {
         const filteredProducts = data.filter(product => 
           product.category === "men's clothing" || product.category === "women's clothing"
         );
-        setProducts(filteredProducts);
+        const productsWithQuantity = filteredProducts.map(product => ({
+          ...product,
+          quantity: 0,
+        }));
+        setProducts(productsWithQuantity);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -29,6 +33,14 @@ const ProductPage = () => {
   }, []); 
 
   console.log('Products:', products); 
+
+  const handleAddToCart = (productId) => {
+    setProducts(prevProducts => 
+      prevProducts.map(product =>
+        product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
+      )
+    );
+  };  
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -46,6 +58,22 @@ const ProductPage = () => {
             <h2 style={{ fontSize: '16px', marginBottom: '5px' }}>{product.title}</h2> 
             <img src={product.image} alt={product.title} style={{ maxWidth: '60%', height: 'auto' }} /> 
             <p>Price: ${product.price}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50px'}}>
+              <p>Quantity: {product.quantity}</p>
+              <button 
+                style={{
+                  backgroundColor: '#4CAF50', 
+                  color: 'white', 
+                  padding: '5px 10px', 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer',
+                }}
+                onClick={() => handleAddToCart(product.id)}
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         ))}
       </div>
